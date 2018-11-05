@@ -5,7 +5,7 @@ Analyses performed for the nanocompore paper
 
 https://www.authorea.com/users/34664/articles/334998-comparative-detection-of-rna-modifications-with-nanopore-direct-rna-sequencing#
 
-## Artificial test dataset
+## Simulated test dataset
 
 Description: ...
 
