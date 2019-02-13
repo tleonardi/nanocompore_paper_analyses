@@ -21,7 +21,7 @@ The Bruijn sequence is the shortest circular sequence of length such that every 
 In order to generate in silico reads, we first needed to obtain a model distribution for each kmers that could subsequently be altered to mimick the effect of  modifications on the signal. To do so, we used an in vitro synthesized non-modified RNA dataset obtained from the [Human Nanopore Consortium data repository](https://github.com/nanopore-wgs-consortium/NA12878/blob/master/nanopore-human-transcriptome/fastq_fast5_bulk.md). After mapping and signal realignment with Nanopolish, we collected median intensity and dwell time for each 5-mers. We then fitted a large number of distributions and selected the one minimizing the overall sum of squared errors between the real data and the model distribution. The median intensity is best modeled by a [logistic distribution](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.logistic.html) and the dwell time by a [Wald distribution](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.wald.html).  
 
 - Analysis python notebook: [Kmer_Model_Generation.ipynb](https://github.com/a-slide/nanocompore_paper_analyses/blob/master/in_silico_dataset/Kmer_Model_Generation.ipynb)
-- Kmers model: [kmer_model_RNA.tsv](https://raw.githubusercontent.com/a-slide/nanocompore_paper_analyses/master/in_silico_dataset/kmer_model_RNA.tsv)
+- Kmers model: [kmer_model_RNA.tsv](https://raw.githubusercontent.com/a-slide/nanocompore_paper_analyses/master/in_silico_dataset/kmer_model_RNA.tsv?token=AFb-SClDNjGaXPwUmSsM9X9EgGWf-aatks5cbTpPwA%3D%3D)
 
 ### Simulated datasets generation
 
