@@ -10,11 +10,16 @@ https://www.authorea.com/users/34664/articles/334998-comparative-detection-of-rn
 
 ### In silico reference
 
-To assess the accuracy of Nanocompore, we generated a set of in silico reference sequences. In order to cover all the possible sequence context, we first generated a De Bruijn sequence with all possible 7 bases long kmers.
-The Bruijn sequence is the shortest circular sequence of length such that every string of length on the alphabet of size occurs as a contiguous substring of the sequence. However it lacks the complexity and randomness of real biological data. In addition we also wanted to create a high level of redundancy to have the same kmers in various larger sequence contexts. Thus, the De Bruijn sequence was sliced into fragments of 15 bases with a 1 base step sliding window. A set of 2000 sequences 500 bases long were then created by joining randomly selected fragments together. The selected set covers all of the 7-mers at least 35 times and up to 93, vith a median coverage of 60 occurences. 
+To assess the accuracy of Nanocompore, we generated a set of in silico reference sequences. In order to maximise the sequence diversity and kmer coverage we wrote a "guided" random sequence generator. In brief, the sequences are generated base per base using a randon function, but the program keeps a track of the number of times each kmers was already used. The sequence is extended, based on a random function with a weighted probability for each kmer invertly proportional to their occurence in the sequences already generated. Essentially, this ensure that all kmers are represented as uniformly as possible, but it leaves some limited space to randomness. We generated a set of 2000 sequences 500 bases long each that maximises the 9-mer coverage. We also excluded any homopolymer longer than 5 bases, as they are likely to be miscalled in nanopore data. All sequence were aligned in a pairwise fashion to ensure they are sufficiently different from each other. Kmer coverage in the final sequence set are summarised in the table below.  
 
-* Analysis python notebook: [De_Bruijn_shuffle_seq_gen.ipynb](https://github.com/a-slide/nanocompore_paper_analyses/blob/master/in_silico_dataset/De_Bruijn_shuffle_seq_gen.ipynb)
-* Fasta reference : [shuffle_de_bruijn_ref.fa](https://raw.githubusercontent.com/a-slide/nanocompore_paper_analyses/master/in_silico_dataset/shuffle_de_bruijn_ref.fa?token=AFb-SIR5A2x5Q0Ak4qhYcfrajIHz5e5tks5cbReIwA%3D%3D)
+| Kmer length | % kmer found | Median  occurences |
+| ----------- | ------------ | ------------------ |
+| 5           | 100.00%      | 970                |
+| 7           | 99.83%       | 60                 |
+| 9           | 99.66%       | 4                  |
+
+* Analysis python notebook: [Random_guided_seq_gen.ipynb](https://github.com/a-slide/nanocompore_paper_analyses/blob/master/in_silico_dataset/Random_guided_seq_gen.ipynb)
+* Fasta reference : [random weighted function.fa](https://raw.githubusercontent.com/a-slide/nanocompore_paper_analyses/master/in_silico_dataset/random weighted function.fa)
 
 ### kmer intensity and dwell time model
 
