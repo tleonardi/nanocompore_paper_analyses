@@ -19,7 +19,7 @@ To assess the accuracy of Nanocompore, we generated a set of in silico reference
 | 9           | 99.66%       | 4                  |
 
 * Analysis python notebook: [Random_guided_seq_gen.ipynb](https://github.com/a-slide/nanocompore_paper_analyses/blob/master/in_silico_dataset/Random_guided_seq_gen.ipynb)
-* Fasta reference : [random weighted function.fa](https://raw.githubusercontent.com/a-slide/nanocompore_paper_analyses/master/in_silico_dataset/random weighted function.fa)
+* Fasta reference: [random weighted function.fa](https://raw.githubusercontent.com/a-slide/nanocompore_paper_analyses/master/in_silico_dataset/random_guided_weight.fa?token=AFb-SFBQY-nS-i6UM-o-gg9_JOz3j-0pks5cd-hvwA%3D%3D)
 
 ### kmer intensity and dwell time model
 
