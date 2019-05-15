@@ -2,6 +2,7 @@
 BASEDIR=$(git rev-parse --show-toplevel)
 CONDA_ENVS="$BASEDIR/conda_environments/"
 ANALYSIS="${BASEDIR}/METTL3_polyA/analysis"
+RESULTS="${BASEDIR}/METTL3_polyA/results"
 BED="${BASEDIR}/METTL3_polyA/data/nanocompore/bed_files/sig_sites_GMM_pvalue_thr0.05.bed"
 TRANSCRIPTOME="${BASEDIR}/METTL3_polyA/data/references/reference_transcriptome.bed"
 
@@ -47,3 +48,4 @@ bedtools getfasta -s -split -name -fi $GENOME -bed $ANALYSIS/motifs/bg_noOlap.be
 # Run Homer
 findMotifs.pl $ANALYSIS/motifs/sig_sites_ext_unique.fa fasta $ANALYSIS/motifs/homer -fasta $ANALYSIS/motifs/bg_noOlap.fa -p 5 -len 5 -S 5 -norevopp 
 
+cp -R $ANALYSIS/motifs/homer $RESULTS
