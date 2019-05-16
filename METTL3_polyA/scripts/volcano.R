@@ -40,6 +40,6 @@ pdf(paste0(RESULTS,"/volcano_plot.pdf"), height=10, width=10)
 print(volcano)
 dev.off()
 
-pdf(paste0(RESULTS,"/volcano_abs_lor_plot.png"), height=10, width=10)
+pdf(paste0(RESULTS,"/volcano_abs_lor_plot.pdf"), height=10, width=10)
 print(volcano_abs)
 dev.off()
