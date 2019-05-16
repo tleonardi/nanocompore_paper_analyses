@@ -1,21 +1,100 @@
-```{r}
 library("tidyverse")
-```
+library("Repitools")
+library("GenomicRanges")
+library("GenomicAlignments")
+library("cowplot")
+library("RColorBrewer")
+library("reshape2")
 
-```{r}
+ROOTDIR=system2("git", args=c("rev-parse", "--show-toplevel"), stdout=T)
+BASEDIR=paste0(ROOTDIR, "/METTL3_polyA/")
+RESULTS=paste0(ROOTDIR, "/METTL3_polyA/results/")
+
+
 file_annot <- tribble(~Name, ~File,
-	      "KD68_Rep1", "data/m6A_KD_68_Rep1.bw",
-	      "KD68_Rep2", "data/m6A_KD_68_Rep2.bw",
-	      "KD70_Rep1", "data/m6A_KD_70_Rep1.bw",
-	      "KD70_Rep2", "data/m6A_KD_70_Rep2.bw",
-	      "CT_Rep1", "data/m6A_CT_Rep1.bw",
-	      "CT_Rep2", "data/m6A_CT_Rep2.bw")
+		"Input_Ctrl_rep1", "MOLM13_Input_Ctrl_rep1.bam",
+		"Input_sh68_rep1", "MOLM13_Input_sh68_rep1.bam",
+		"Input_sh70_rep1", "MOLM13_Input_sh70_rep1.bam",
+		"IP_Ctrl_rep1", "MOLM13_IP_Ctrl_rep1.bam",
+		"IP_sh68_rep1", "MOLM13_IP_sh68_rep1.bam",
+		"IP_sh70_rep1", "MOLM13_IP_sh70_rep1.bam",
+		"Input_Ctrl_rep2", "MOLM13_Input_Ctrl_rep2.bam",
+		"Input_sh68_rep2", "MOLM13_Input_sh68_rep2.bam",
+		"Input_sh70_rep2", "MOLM13_Input_sh70_rep2.bam",
+		"IP_Ctrl_rep2", "MOLM13_IP_Ctrl_rep2.bam",
+		"IP_sh68_rep2", "MOLM13_IP_sh68_rep2.bam",
+		"IP_sh70_rep2", "MOLM13_IP_sh70_rep2.bam") %>%
+	      mutate(File=paste0(BASEDIR, "/data/MOLM13_m6A_RIP/", File))
+bam <- file_annot$File
+names(bam) <- file_annot$Name
 
-bam <- list()
+rangeW=100
+all_peak_counts=list()
+peaks <- read_tsv(paste0(BASEDIR, "data/nanocompore/GMM_pvalue_thr1.bed"), col_names=F, skip=1) %>% 
+	 rename(X1="Chr", X2="Start", X3="End", X4="Name", X5="Score", X6="Strand") %>%
+	 mutate(Name=paste0(Name, "_", Start))
 
-for( n in file_annot$Name) {
-	bam[[n]] <- rtracklayer::import(as.character(file_annot[file_annot$Name==n, "File"]), format="BigWig")
+sig_peaks <- filter(peaks, Score>-log10(0.01))
+non_sig_peaks <- top_n(peaks, nrow(sig_peaks), rev(Score))
+
+peaks_subset <- rbind(sig_peaks, non_sig_peaks)
+peaks_mid <- GRanges(seqnames=peaks_subset$Chr, ranges=IRanges(start=peaks_subset$Start+2, end=peaks_subset$Start+2), strand=peaks_subset$Strand, name=peaks_subset$Name)
+
+for (sname in names(bam)) {
+    message(paste0("Processing: ", sname))
+    peak_count <- featureScores(bam[[sname]], peaks_mid, up = rangeW, down = rangeW, dist = "base", freq = 2, use.strand=T)
+    for (i in 1:length(peak_count)) peak_count@scores[[i]] <- 1e6*peak_count@scores[[i]]
+    all_peak_counts[[sname]] <- peak_count
+    gc()
 }
+
+point_tibble<-function(df,name){
+        df1 <-  df@scores[[1]]
+        df1 <-  as_tibble(df1) %>%
+                mutate(Name= map2(rownames(df1), paste0("##", 1:nrow(df1)), paste0) %>% unlist) %>%
+                gather(-Name, key="position", value="Signal") %>%
+                mutate(position = as.numeric(position))
+        df1 <-  mutate(df1, sample = rep(name, nrow(df1)))
+
+        return(df1)
+}
+
+merged_points <- 
+	map2(all_peak_counts, as.list(names(all_peak_counts)), point_tibble) %>% 
+	bind_rows() %>% 
+	mutate(sample=factor(sample, levels=names(bam))) %>%     
+	mutate(Condition=gsub("_rep[12]", "", sample)) %>%
+	mutate(IP=gsub("(Input|IP).+", "\\1", sample)) %>%
+	mutate(Treatment=gsub(".+(Ctrl|sh[0-9]+).+", "\\1", sample)) %>%
+	mutate(Rep=gsub(".+(rep[12])", "\\1", sample)) %>%
+	dcast(Name+position+Rep+Treatment~IP, value.var="Signal") %>%
+	mutate(Enrichment=(IP+1)/(Input+1)) %>%
+	group_by(Name, position, Treatment) %>%
+	summarise(Enrichment=mean(Enrichment))
+
+
+peaks_scores=mutate(peaks, Sig=Score>-log10(0.01)) %>% select(Name, Sig) 
+ungroup(merged_points) %>% 
+	mutate(Name=gsub("##[0-9]+$", "", Name)) %>% 
+	left_join(peaks_scores) %>%
+	group_by(position, Treatment, Sig) %>% 
+	summarise(meanEnrichment=mean(Enrichment), sd=sd(Enrichment)) %>% 
+	ggplot(aes(x=position, y=meanEnrichment, colour=Treatment)) + geom_line() + facet_wrap(~Sig)
+
+
+rip_de_peaks <- read_tsv(paste0(BASEDIR, "data/MOLM13_m6A_RIP/diff_peak.tsv"), col_names=T)
+rip_sig_de_peaks <- filter(de_peaks, lg.fdr< -1, diff.lg.fdr< -1, diff.log2.fc<0)
+
+rip_sig_de_peals_ranges <- GRanges(seqnames=rip_sig_de_peaks$chr, ranges=IRanges(start=rip_sig_de_peaks$chromStart, end=rip_sig_de_peaks$chromEnd), strand=rip_sig_de_peaks$strand)
+
+peaks <- read_tsv(paste0(BASEDIR, "data/nanocompore/GMM_pvalue_thr1.bed"), col_names=F, skip=1) %>% 
+	 rename(X1="Chr", X2="Start", X3="End", X4="Name", X5="Score", X6="Strand") %>%
+	 mutate(Name=paste0(Name, "_", Start))
+nanocompore_sig_sites <- filter(sig_peaks, Score>-log10(0.1))
+nanocompore_sig_sites_ranges <- GRanges(seqnames=nanocompore_sig_sites$Chr, ranges=IRanges(start=nanocompore_sig_sites$Start-10, end=nanocompore_sig_sites$Start+10), strand=nanocompore_sig_sites$Strand, name=nanocompore_sig_sites$Name)
+findOverlaps(nanocompore_sig_sites_ranges, rip_sig_de_peals_ranges)
+
+
 
 
 peaks <- import("data/nanocompore_results_gmm_ucsc.txt", format="bed")
