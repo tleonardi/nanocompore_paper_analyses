@@ -28,21 +28,25 @@ file_annot <- tribble(~Name, ~File,
 bam <- file_annot$File
 names(bam) <- file_annot$Name
 
-rangeW=100
-all_peak_counts=list()
+# Load GMM peaks
 peaks <- read_tsv(paste0(BASEDIR, "data/nanocompore/GMM_pvalue_thr1.bed"), col_names=F, skip=1) %>% 
 	 rename(X1="Chr", X2="Start", X3="End", X4="Name", X5="Score", X6="Strand") %>%
 	 mutate(Name=paste0(Name, "_", Start))
 
+# Extract Significant and not significant peaks
 sig_peaks <- filter(peaks, Score>-log10(0.01))
 non_sig_peaks <- top_n(peaks, nrow(sig_peaks), rev(Score))
-
 peaks_subset <- rbind(sig_peaks, non_sig_peaks)
+
+# Identify the midpoint
 peaks_mid <- GRanges(seqnames=peaks_subset$Chr, ranges=IRanges(start=peaks_subset$Start+2, end=peaks_subset$Start+2), strand=peaks_subset$Strand, name=peaks_subset$Name)
 
+# Calculate coverage of Sites
+rangeW=100
+all_peak_counts=list()
 for (sname in names(bam)) {
     message(paste0("Processing: ", sname))
-    peak_count <- featureScores(bam[[sname]], peaks_mid, up = rangeW, down = rangeW, dist = "base", freq = 2, use.strand=T)
+    peak_count <- featureScores(bam[[sname]], peaks_mid, up = rangeW, down = rangeW, dist = "base", s.width=100, freq = 10, use.strand=T)
     for (i in 1:length(peak_count)) peak_count@scores[[i]] <- 1e6*peak_count@scores[[i]]
     all_peak_counts[[sname]] <- peak_count
     gc()
@@ -55,10 +59,9 @@ point_tibble<-function(df,name){
                 gather(-Name, key="position", value="Signal") %>%
                 mutate(position = as.numeric(position))
         df1 <-  mutate(df1, sample = rep(name, nrow(df1)))
-
         return(df1)
 }
-
+# Summarise the coverage
 merged_points <- 
 	map2(all_peak_counts, as.list(names(all_peak_counts)), point_tibble) %>% 
 	bind_rows() %>% 
@@ -68,36 +71,124 @@ merged_points <-
 	mutate(Treatment=gsub(".+(Ctrl|sh[0-9]+).+", "\\1", sample)) %>%
 	mutate(Rep=gsub(".+(rep[12])", "\\1", sample)) %>%
 	dcast(Name+position+Rep+Treatment~IP, value.var="Signal") %>%
-	mutate(Enrichment=(IP+1)/(Input+1)) %>%
-	group_by(Name, position, Treatment) %>%
-	summarise(Enrichment=mean(Enrichment))
+	mutate(Enrichment=log2((IP+1)/(Input+1))) %>%
+	group_by(Name, position, Treatment)
 
-
-peaks_scores=mutate(peaks, Sig=Score>-log10(0.01)) %>% select(Name, Sig) 
+# Annotate scores
+peaks_scores=mutate(peaks, Sig=Score>17) %>% select(Name, Score, Sig) 
 ungroup(merged_points) %>% 
+	summarise(Enrichment=mean(Enrichment)) %>%
 	mutate(Name=gsub("##[0-9]+$", "", Name)) %>% 
 	left_join(peaks_scores) %>%
-	group_by(position, Treatment, Sig) %>% 
+	group_by(position, Treatment, Rep, Sig) %>% 
 	summarise(meanEnrichment=mean(Enrichment), sd=sd(Enrichment)) %>% 
-	ggplot(aes(x=position, y=meanEnrichment, colour=Treatment)) + geom_line() + facet_wrap(~Sig)
+	ggplot(aes(x=position, y=meanEnrichment, colour=Treatment)) + geom_line() + facet_grid(Rep~Sig) 
++ geom_ribbon(aes(ymin=meanEnrichment-sd, ymax=meanEnrichment+sd), alpha=0.1)
+
+pdf(paste0(RESULTS,"/RIP_vs_nanocompore_scores.pdf", width=17))
+ungroup(merged_points) %>% 
+	 mutate(Name=gsub("##[0-9]+$", "", Name)) %>% 
+	 left_join(peaks_scores) %>%
+	 filter(position>-11, position<11) %>%
+	 group_by(Name, Rep, Treatment) %>%
+	 summarise(Enrichment=mean(Enrichment), Score=unique(Score), Sig=unique(Sig)) %>%
+	 ggplot(aes(y=Score, x=Enrichment, colour=Sig)) +geom_point(alpha=0.5) + facet_grid(Rep~Treatment) + xlab("m6A RIP enrichment ratio\nlog2(IP/Input)") + ylab("Nanocompore p-value (-log10)")
+dev.off()
 
 
 rip_de_peaks <- read_tsv(paste0(BASEDIR, "data/MOLM13_m6A_RIP/diff_peak.tsv"), col_names=T)
-rip_sig_de_peaks <- filter(de_peaks, lg.fdr< -1, diff.lg.fdr< -1, diff.log2.fc<0)
 
-rip_sig_de_peals_ranges <- GRanges(seqnames=rip_sig_de_peaks$chr, ranges=IRanges(start=rip_sig_de_peaks$chromStart, end=rip_sig_de_peaks$chromEnd), strand=rip_sig_de_peaks$strand)
+rip_de_peaks <- read_tsv(paste0(BASEDIR, "analysis/rip_coverage/rip_diff_peaks_nanocompore_tx.txt"), col_names=T)
+peaks <- read_tsv(paste0(BASEDIR, "data/nanocompore/GMM_pvalue_thr1.bed"), col_names=F, skip=1) %>% 
+	 rename(X1="Chr", X2="Start", X3="End", X4="Name", X5="Score", X6="Strand") %>%
+	 mutate(Name=paste0(Name, "_", Start))
+
+rip_sig_de_peaks <- filter(rip_de_peaks, lg.fdr< -1, diff.lg.fdr< -1, diff.log2.fc<0)
+rip_sig_de_peaks_ranges <- GRanges(seqnames=rip_sig_de_peaks$chr, ranges=IRanges(start=rip_sig_de_peaks$chromStart, end=rip_sig_de_peaks$chromEnd), strand=rip_sig_de_peaks$strand)
+
+olap_res <- data.frame(thr=c(0.1, 0.05, 0.01, 0.005, 0.001))
+for(thr in olap_res$thr){
+	nanocompore_sig_sites <- filter(peaks, Score>-log10(thr))
+	nanocompore_sig_sites_ranges <- GRanges(seqnames=nanocompore_sig_sites$Chr, ranges=IRanges(start=nanocompore_sig_sites$Start, end=nanocompore_sig_sites$End), strand=nanocompore_sig_sites$Strand, name=nanocompore_sig_sites$Name)
+	nanocompore_sig_sites_ranges <- reduce(nanocompore_sig_sites_ranges)
+	
+	olaps <- findOverlaps(nanocompore_sig_sites_ranges, rip_sig_de_peaks_ranges)
+	nanocompore_tot <- length(nanocompore_sig_sites_ranges)
+	rip_tot <- length(rip_sig_de_peaks_ranges)
+	nanocompore_val <- queryHits(olaps) %>% unique %>% length
+	rip_val <- subjectHits(olaps) %>% unique %>% length
+	olap_res[olap_res$thr == thr, "nano_nv"] <- nanocompore_tot-nanocompore_val
+	olap_res[olap_res$thr == thr, "rip_nv"] <- rip_tot-rip_val
+	olap_res[olap_res$thr == thr, "nano_val"] <- nanocompore_val
+	olap_res[olap_res$thr == thr, "rip_val"] <- rip_val
+}
+
+pdf("tmp.pdf")
+olap_res %>% melt(id.vars="thr") %>% 
+	mutate(RefPoint=case_when(grepl("nano", variable)~"Nanocompore sites with RIP validation", T~"RIP sites with Nanocompore validation")) %>% 
+	mutate(Validated=case_when(grepl("_nv$", variable)~"Not validated", T~"Validated")) %>%
+	ggplot(aes(x=as.factor(thr), y=value, fill=Validated)) + geom_col() + facet_wrap(~RefPoint, ncol=1, scales="free")
+dev.off()
+
+
+
+Vu_peaks <- read_tsv(paste0(BASEDIR, "analysis/Vu_m6A_miCLIP/Vu_m6A_miCLIP_merged_rep_target_olap.bed"), col_names=F)
+vu_ranges <- GRanges(seqnames=Vu_peaks$X1, ranges=IRanges(start=Vu_peaks$X2, end=Vu_peaks$X3), strand=Vu_peaks$X6)
+nanocompore_sig_sites <- filter(peaks, Score>-log10(0.05))
+nanocompore_sig_sites_ranges <- GRanges(seqnames=nanocompore_sig_sites$Chr, ranges=IRanges(start=nanocompore_sig_sites$Start, end=nanocompore_sig_sites$End), strand=nanocompore_sig_sites$Strand, name=nanocompore_sig_sites$Name)
+nanocompore_sig_sites_ranges <- reduce(nanocompore_sig_sites_ranges)
+	
+olaps <- findOverlaps(nanocompore_sig_sites_ranges,vu_ranges)
+
+
+
+miCLIP_w_RIP <- findOverlaps(vu_ranges, rip_sig_de_peaks_ranges) %>% queryHits %>% unique
+olaps <- findOverlaps(nanocompore_sig_sites_ranges,vu_ranges[miCLIP_w_RIP])
+
+
+
+
+pdf("tmp.pdf")
+rip_de_peaks_ranges <- GRanges(seqnames=rip_de_peaks$chr, ranges=IRanges(start=rip_de_peaks$chromStart, end=rip_de_peaks$chromEnd), strand=rip_de_peaks$strand)
+olaps <- findOverlaps(nanocompore_sig_sites_ranges, rip_de_peaks_ranges)
+olap_rows <- subjectHits(olaps) %>% unique
+rip_de_peaks[olap_rows, "Nanocompore"] <- "Yes"
+rip_de_peaks <- mutate(rip_de_peaks, Nanocompore=case_when(is.na(Nanocompore)~"No", T~Nanocompore))
+ggplot(rip_de_peaks, aes(x=diff.log2.fc, y=-diff.lg.fdr, colour=Nanocompore)) + geom_point(alpha=0.2) + ylim(0,20)
+dev.off()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 peaks <- read_tsv(paste0(BASEDIR, "data/nanocompore/GMM_pvalue_thr1.bed"), col_names=F, skip=1) %>% 
 	 rename(X1="Chr", X2="Start", X3="End", X4="Name", X5="Score", X6="Strand") %>%
 	 mutate(Name=paste0(Name, "_", Start))
-nanocompore_sig_sites <- filter(sig_peaks, Score>-log10(0.1))
-nanocompore_sig_sites_ranges <- GRanges(seqnames=nanocompore_sig_sites$Chr, ranges=IRanges(start=nanocompore_sig_sites$Start-10, end=nanocompore_sig_sites$Start+10), strand=nanocompore_sig_sites$Strand, name=nanocompore_sig_sites$Name)
-findOverlaps(nanocompore_sig_sites_ranges, rip_sig_de_peals_ranges)
 
-
-
-
-peaks <- import("data/nanocompore_results_gmm_ucsc.txt", format="bed")
+peaks_mid <- GRanges(seqnames=peaks_subset$Chr, ranges=IRanges(start=peaks_subset$Start+2, end=peaks_subset$Start+2), strand=peaks_subset$Strand, name=peaks_subset$Name)
 peaks_df <- data.frame(Name=peaks$name, pvalue=peaks$score)
 start(peaks) <- start(peaks)+2
 end(peaks) <- end(peaks)-2
