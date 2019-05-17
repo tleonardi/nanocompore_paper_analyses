@@ -110,20 +110,20 @@ ungroup(merged_points) %>%
 	ggplot(aes(fill=Sig, y=Enrichment, x=Treatment)) +geom_boxplot() + facet_wrap(~Rep) + xlab("m6A RIP enrichment ratio\nlog2(IP/Input)") + ylab("Nanocompore p-value (-log10)")
 dev.off()
 
-pdf("tmp.pdf")
-rip_de_peaks_ranges <- GRanges(seqnames=rip_de_peaks$chr, ranges=IRanges(start=rip_de_peaks$chromStart, end=rip_de_peaks$chromEnd), strand=rip_de_peaks$strand)
-olaps <- findOverlaps(nanocompore_sig_sites_ranges, rip_de_peaks_ranges)
-olap_rows <- subjectHits(olaps) %>% unique
-rip_de_peaks[olap_rows, "Nanocompore"] <- "Yes"
-rip_de_peaks <- mutate(rip_de_peaks, Nanocompore=case_when(is.na(Nanocompore)~"No", T~Nanocompore))
-ggplot(rip_de_peaks, aes(x=diff.log2.fc, y=-diff.lg.fdr, colour=Nanocompore)) + geom_point(alpha=0.2) + ylim(0,20)
-dev.off()
-
+#pdf("tmp.pdf")
+#rip_de_peaks_ranges <- GRanges(seqnames=rip_de_peaks$chr, ranges=IRanges(start=rip_de_peaks$chromStart, end=rip_de_peaks$chromEnd), strand=rip_de_peaks$strand)
+#olaps <- findOverlaps(nanocompore_sig_sites_ranges, rip_de_peaks_ranges)
+#olap_rows <- subjectHits(olaps) %>% unique
+#rip_de_peaks[olap_rows, "Nanocompore"] <- "Yes"
+#rip_de_peaks <- mutate(rip_de_peaks, Nanocompore=case_when(is.na(Nanocompore)~"No", T~Nanocompore))
+#ggplot(rip_de_peaks, aes(x=diff.log2.fc, y=-diff.lg.fdr, colour=Nanocompore)) + geom_point(alpha=0.2) + ylim(0,20)
+#dev.off()
+#
 
 nanocomp_counts <- read_tsv(paste0(BASEDIR, "analysis/rip_clip_olaps/nanocompore_counts.txt"))
 rip_clip_counts <- read_tsv(paste0(BASEDIR, "analysis/rip_clip_olaps/rip_clip_counts.txt"))
 
-pdf(paste0(RESULTS,"/RIP_vs_nanocompore_boxplot.pdf"), width=12)
+pdf(paste0(RESULTS,"/RIP_CLIP_nanocompore.pdf"), height=12)
 rip_clip_counts %>% mutate(wo_nanocompore=Total-w_nanocompore) %>% select(-Total) %>% melt %>%
 	mutate(Type=fct_recode(Type,  `m6A miCLIP (Vu et al.)`="CLIP", `m6A meRIP (Barbieri et al.)`="RIP", `m6A meRIP METTL3 dependent peaks (Barbieri et al.)`="RIP_M3")) %>%
 	mutate(Validation=fct_recode(Validation, 
@@ -134,7 +134,7 @@ rip_clip_counts %>% mutate(wo_nanocompore=Total-w_nanocompore) %>% select(-Total
 				     )
         ) %>%
 	mutate(variable=fct_recode(variable,  `p-value>=0.05`="wo_nanocompore", `p-value<0.05`="w_nanocompore")) %>%
-	ggplot(aes(x=Validation, y=value, fill=fct_reorder(variable, rev(value)))) + 
+	ggplot(aes(x=Validation, y=value, fill=fct_reorder(variable, value, .desc=F))) + 
 		geom_col(colour="black") + 
 		facet_wrap(~Type, ncol=1, scales="free") + 
 		scale_fill_manual(name="Nanocompore", values=c("grey", "#de2d26")) +
@@ -143,6 +143,17 @@ rip_clip_counts %>% mutate(wo_nanocompore=Total-w_nanocompore) %>% select(-Total
 dev.off()
 
 
-pdf("tmp.pdf")
+pdf(paste0(RESULTS,"/Nanocompore_sites_support.pdf"))
+total=filter(nanocomp_counts, Type=="Total")%>%pull(N)
 nanocomp_counts %>% 
-	ggplot(aes(x=Type, y=N)) + geom_bar()
+	mutate(Fraction=100*N/total) %>% 
+	filter(Type!="Total") %>% 
+	mutate(Type=fct_recode(Type, 
+				     `Supported by\nmiCLIP`="With_CLIP", 
+				     `Supported by\nmeRIP`="With_RIP", 
+				     `Supported by\nmiCLIP and meRIP`="With_Both" 
+				     )
+        ) %>%
+	mutate(Type=fct_reorder(Type, N, .desc=T)) %>%
+	ggplot(aes(x=Type, y=Fraction)) + geom_col() + geom_text(aes(y=Fraction+0.1, label=paste0(N, "/", total))) + xlab("") + ylab("Percentage of nanocompore\nsignificant sites") + theme_bw()
+dev.off()

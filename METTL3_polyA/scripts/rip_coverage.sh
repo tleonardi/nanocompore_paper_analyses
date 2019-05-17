@@ -29,7 +29,8 @@ bedparse bed12tobed6  $ANALYSIS/rip_coverage/nanocompore_targeted_tx.bed > $ANAL
 cat <(head -n 1 $RIP_PEAKS) <(bedtools intersect -u -s -a $RIP_PEAKS -b $ANALYSIS/rip_coverage/nanocompore_targeted_tx.bed6) > $ANALYSIS/rip_coverage/rip_diff_peaks_nanocompore_tx.txt
 
 # Filter METTL3 dep RIP sites that overlap Nanocompore transcripts
-
+awk 'BEGIN{OFS=FS="\t"}$14<-1 && $16<-1 && $18<0' $RIP_PEAKS > $ANALYSIS/rip_coverage/rip_diff_peaks_METTL3dep.bed
+cat <(head -n 1 $RIP_PEAKS) <(bedtools intersect -u -s -a $ANALYSIS/rip_coverage/rip_diff_peaks_METTL3dep.bed -b $ANALYSIS/rip_coverage/nanocompore_targeted_tx.bed6) > $ANALYSIS/rip_coverage/rip_diff_peaks_METTL3dep_nanocompore_tx.txt
 
 
 # Filter miCLIP sites that overlap Nanocompore transcripts
@@ -83,10 +84,30 @@ bedtools intersect -u -s -split \
 	> ${ANALYSIS}/rip_clip_olaps/rip_w_clip_w_nanocompore.bed
 
 
+# RIP METTL3 dep
+bedtools intersect -u -s -split \
+	-a $ANALYSIS/rip_coverage/rip_diff_peaks_METTL3dep_nanocompore_tx.txt \
+	-b ${ANALYSIS}/Vu_m6A_miCLIP/Vu_m6A_miCLIP_merged_rep_target_olap.bed \
+	> ${ANALYSIS}/rip_clip_olaps/rip_METTL3dep_w_clip.bed
+
+bedtools intersect -u -s -split \
+	-a $ANALYSIS/rip_coverage/rip_diff_peaks_METTL3dep_nanocompore_tx.txt \
+	-b ${BASEDIR}/METTL3_polyA/data/nanocompore/bed_files/sig_sites_GMM_pvalue_thr0.05.ucsc.bed \
+	> ${ANALYSIS}/rip_clip_olaps/rip_METTL3dep_w_nanocompore.bed
+
+bedtools intersect -u -s -split \
+	-a ${ANALYSIS}/rip_clip_olaps/rip_METTL3dep_w_clip.bed \
+	-b ${BASEDIR}/METTL3_polyA/data/nanocompore/bed_files/sig_sites_GMM_pvalue_thr0.05.ucsc.bed  \
+	> ${ANALYSIS}/rip_clip_olaps/rip_METTL3dep_w_clip_w_nanocompore.bed
+
+
+
 (cat <<EOF
 Type	Validation	Total	w_nanocompore
 RIP	RIP_only	$(wc -l $ANALYSIS/rip_coverage/rip_diff_peaks_nanocompore_tx.txt|cut -d ' ' -f1)	$(wc -l ${ANALYSIS}/rip_clip_olaps/rip_w_nanocompore.bed|cut -d ' ' -f1)
 RIP	With_CLIP	$(wc -l ${ANALYSIS}/rip_clip_olaps/rip_w_clip.bed|cut -d ' ' -f1)	$(wc -l ${ANALYSIS}/rip_clip_olaps/rip_w_clip_w_nanocompore.bed|cut -d ' ' -f1)
+RIP_M3	RIP_only	$(wc -l $ANALYSIS/rip_coverage/rip_diff_peaks_METTL3dep_nanocompore_tx.txt|cut -d ' ' -f1)	$(wc -l ${ANALYSIS}/rip_clip_olaps/rip_METTL3dep_w_nanocompore.bed|cut -d ' ' -f1)
+RIP_M3	With_CLIP	$(wc -l ${ANALYSIS}/rip_clip_olaps/rip_METTL3dep_w_clip.bed|cut -d ' ' -f1)	$(wc -l ${ANALYSIS}/rip_clip_olaps/rip_METTL3dep_w_clip_w_nanocompore.bed|cut -d ' ' -f1)
 CLIP	CLIP_only	$(wc -l ${ANALYSIS}/Vu_m6A_miCLIP/Vu_m6A_miCLIP_merged_rep_target_olap.bed|cut -d ' ' -f1)	$(wc -l ${ANALYSIS}/rip_clip_olaps/clip_w_nanocompore.bed|cut -d ' ' -f1)
 CLIP	With_RIP	$(wc -l ${ANALYSIS}/rip_clip_olaps/clip_w_rip.bed|cut -d ' ' -f1)	$(wc -l ${ANALYSIS}/rip_clip_olaps/clip_w_rip_w_nanocompore.bed|cut -d ' ' -f1)
 EOF
