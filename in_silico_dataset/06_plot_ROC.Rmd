@@ -14,19 +14,18 @@ combined <- group_by(combined, dataset_id, method) %>%
 
 pdf("ROC_GMM.pdf", width=12, height=12)
 filter(combined, method=="GMM") %>%
-ggplot(aes(x=FPR_rm, y=TPR_rm, colour=factor(mod_reads_freq), group=mod_reads_freq)) + 
+ggplot(aes(x=FPR, y=TPR, colour=factor(mod_reads_freq), group=mod_reads_freq)) + 
 	geom_line() + 
 	facet_grid(intensity_mod_loc~dwell_mod_loc, labeller = label_both) +
 	xlab("False Positive Rate") + 
 	ylab("True Positive Rate") + 
-	xlim(0,0.2)+
 	labs(title="GMM test", color="Fraction of modified reads") +
 	theme_bw()
 dev.off()
 
 pdf("ROC_ks_intensity.pdf", width=12, height=12)
-filter(combined, method=="KD_int") %>%
-ggplot(combined, aes(x=FPR, y=TPR, colour=factor(mod_reads_freq), gro_p=mod_reads_freq)) + 
+filter(combined, method=="KS_int") %>%
+ggplot(aes(x=FPR, y=TPR, colour=factor(mod_reads_freq), gro_p=mod_reads_freq)) + 
 	geom_line() + 
 	facet_grid(intensity_mod_loc~dwell_mod_loc, labeller = label_both) +
 	xlab("False Positive Rate") + 
@@ -36,7 +35,8 @@ ggplot(combined, aes(x=FPR, y=TPR, colour=factor(mod_reads_freq), gro_p=mod_read
 dev.off()
 
 pdf("ROC_ks_dwell.pdf", width=12, height=12)
-ggplot(combined, aes(x=FPR_ksDw, y=TPR_ksDw, colour=factor(mod_reads_freq), gro_p=mod_reads_freq)) + 
+filter(combined, method=="KS_dwell") %>%
+ggplot(aes(x=FPR, y=TPR, colour=factor(mod_reads_freq), gro_p=mod_reads_freq)) + 
 	geom_line() + 
 	facet_grid(intensity_mod_loc~dwell_mod_loc, labeller = label_both) +
 	xlab("False Positive Rate") + 
