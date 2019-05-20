@@ -1,0 +1,48 @@
+```{r}
+
+library(tidyverse)
+library(zoo)
+
+trials_meta <- read_tsv("/hps/nobackup/enright/nanopore/analyses/nanocompore_paper_analyses/in_silico_dataset/data/simulated_datasets2/index.tsv")
+
+combined <- read_tsv("/hps/nobackup/enright/tom/in_silico_dataset/analysis/roc_data//all_datasets.txt", col_names=c("dataset_id", "method", "threshold", "TPR", "FPR")) %>% left_join(., trials_meta)
+
+
+combined <- group_by(combined, dataset_id, method) %>% 
+	mutate(TPR_rm=rollmean(x = TPR, 3, align = "center", fill = NA), FPR_rm=rollmean(x = FPR, 3, align = "center", fill = NA)) %>% 
+	mutate(TPR_rm=case_when(is.na(TPR_rm)~TPR, T~TPR_rm), FPR_rm=case_when(is.na(FPR_rm)~FPR, T~FPR_rm))
+
+pdf("ROC_GMM.pdf", width=12, height=12)
+filter(combined, method=="GMM") %>%
+ggplot(aes(x=FPR_rm, y=TPR_rm, colour=factor(mod_reads_freq), group=mod_reads_freq)) + 
+	geom_line() + 
+	facet_grid(intensity_mod_loc~dwell_mod_loc, labeller = label_both) +
+	xlab("False Positive Rate") + 
+	ylab("True Positive Rate") + 
+	xlim(0,0.2)+
+	labs(title="GMM test", color="Fraction of modified reads") +
+	theme_bw()
+dev.off()
+
+pdf("ROC_ks_intensity.pdf", width=12, height=12)
+filter(combined, method=="KD_int") %>%
+ggplot(combined, aes(x=FPR, y=TPR, colour=factor(mod_reads_freq), gro_p=mod_reads_freq)) + 
+	geom_line() + 
+	facet_grid(intensity_mod_loc~dwell_mod_loc, labeller = label_both) +
+	xlab("False Positive Rate") + 
+	ylab("True Positive Rate") + 
+	labs(title="KS intensity test", color="Fraction of modified reads") +
+	theme_bw()
+dev.off()
+
+pdf("ROC_ks_dwell.pdf", width=12, height=12)
+ggplot(combined, aes(x=FPR_ksDw, y=TPR_ksDw, colour=factor(mod_reads_freq), gro_p=mod_reads_freq)) + 
+	geom_line() + 
+	facet_grid(intensity_mod_loc~dwell_mod_loc, labeller = label_both) +
+	xlab("False Positive Rate") + 
+	ylab("True Positive Rate") + 
+	labs(title="KS dwell test", color="Fraction of modified reads") +
+	theme_bw()
+dev.off()
+
+```
