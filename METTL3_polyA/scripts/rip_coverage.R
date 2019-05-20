@@ -134,7 +134,7 @@ rip_clip_counts %>% mutate(wo_nanocompore=Total-w_nanocompore) %>% select(-Total
 				     )
         ) %>%
 	mutate(variable=fct_recode(variable,  `p-value>=0.05`="wo_nanocompore", `p-value<0.05`="w_nanocompore")) %>%
-	ggplot(aes(x=Validation, y=value, fill=fct_reorder(variable, value, .desc=F))) + 
+	ggplot(aes(x=Validation, y=value, fill=fct_reorder(variable, value, .desc=T))) + 
 		geom_col(colour="black") + 
 		facet_wrap(~Type, ncol=1, scales="free") + 
 		scale_fill_manual(name="Nanocompore", values=c("grey", "#de2d26")) +
