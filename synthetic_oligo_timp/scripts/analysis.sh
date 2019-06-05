@@ -3,7 +3,7 @@ BASEDIR=$(git rev-parse --show-toplevel)
 CONDA_ENVS="$BASEDIR/conda_environments/"
 ANALYSIS="${BASEDIR}/synthetic_oligo_timp/analysis"
 IMAGE="$BASEDIR/synthetic_oligo_timp/nanocompore_af97cf1.img"
-OLDIMAGE="/hps/nobackup/enright/tom/new_nanocompore/7SK_DKC1/nanocompore_pipeline/singularity/nanocompore_b93c6c2.img"
+OLDIMAGE="$BASEDIR/synthetic_oligo_timp/nanocompore_b93c6c2.img"
 
 # Download the sequencing data
 mkdir -p $ANALYSIS/data
@@ -58,3 +58,5 @@ singularity exec $OLDIMAGE bash -c "$NANOCOMPORE_COMMAND"
 
 mkdir -p $BASEDIR/synthetic_oligo_timp/results
 cp $ANALYSIS/nanocompore/* $BASEDIR/synthetic_oligo_timp/results
+
+singularity exec $OLDIMAGE python3 $BASEDIR/synthetic_oligo_timp/scripts/plot_results.py $BASEDIR/synthetic_oligo_timp/results/out_SampComp
