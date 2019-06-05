@@ -53,6 +53,8 @@ singularity exec $IMAGE bash -c "$NANOPOLISHCOMP2_COMMAND"
 mkdir $ANALYSIS/nanocompore/
 echo -e ">FLuc_Control_Plasmid:88-1805\nTGAGGACTGTA" > $ANALYSIS/nanocompore/ref.fa
 
-NANOCOMPORE_COMMAND="nanocompore sampcomp --file_list1 $ANALYSIS/nanopolishcomp/mod_eventalign_collapse.tsv --file_list2 $ANALYSIS/nanopolishcomp/unmod_eventalign_collapse.tsv --label1 mod --label2 unmod --fasta $ANALYSIS/nanocompore/ref.fa --outpath $ANALYSIS/nanocompore/ --min_ref_length 1 --sequence_context 1 --pvalue_thr 0 --overwrite"
+NANOCOMPORE_COMMAND="nanocompore sampcomp --file_list1 $ANALYSIS/nanopolishcomp/mod_eventalign_collapse.tsv --file_list2 $ANALYSIS/nanopolishcomp/unmod_eventalign_collapse.tsv --label1 mod --label2 unmod --fasta $ANALYSIS/nanocompore/ref.fa --outpath $ANALYSIS/nanocompore/ --min_ref_length 1 --sequence_context 0 --pvalue_thr 0 --overwrite"
 singularity exec $OLDIMAGE bash -c "$NANOCOMPORE_COMMAND"
 
+mkdir -p $BASEDIR/synthetic_oligo_timp/results
+cp $ANALYSIS/nanocompore/* $BASEDIR/synthetic_oligo_timp/results
