@@ -46,3 +46,42 @@ ggplot(aes(x=FPR, y=TPR, colour=factor(mod_reads_freq), gro_p=mod_reads_freq)) +
 dev.off()
 
 ```
+
+```{r}
+auroc <- function(TPR, FPR){
+	sens=TPR
+	omspec=FPR
+	height = (sens[-1]+sens[-length(sens)])/2
+	width = -diff(omspec) # = diff(rev(omspec))
+	return(sum(height*width))
+}
+
+pdf("auroc.pdf", width=12, height=12)
+group_by(combined, method, mod_reads_freq, intensity_mod_loc, dwell_mod_loc) %>% 
+	filter(intensity_mod_loc>=0.1, dwell_mod_loc>=1e-03) %>%
+	summarise(AUROC=auroc(TPR, FPR)) %>% 
+	ggplot(aes(x=method, y=AUROC, fill=as.factor(mod_reads_freq))) + 
+	geom_col(colour="black", position="dodge") + 
+	facet_grid(intensity_mod_loc~dwell_mod_loc) +
+	scale_fill_brewer() +
+	theme_bw() +
+	xlab("Testing Method") +
+	ylab("AUROC") +
+	labs(fill="Fraction of modified reads")
+dev.off()
+
+pdf("auroc_lines.pdf", width=12, height=12)
+group_by(combined, method, mod_reads_freq, intensity_mod_loc, dwell_mod_loc) %>% 
+	filter(intensity_mod_loc>=0.1, dwell_mod_loc>=1e-03) %>%
+	summarise(AUROC=auroc(TPR, FPR)) %>% 
+	ggplot(aes(colour=method, y=AUROC, x=mod_reads_freq)) + 
+	geom_line() + geom_point() +
+	facet_grid(intensity_mod_loc~dwell_mod_loc) +
+	theme_bw() +
+	xlab("Fraction of modified reads") +
+	ylab("AUROC") +
+	labs(color="Testing method")
+dev.off()
+
+
+```
