@@ -1,16 +1,17 @@
 #!/bin/bash
 export BASEDIR="/hps/nobackup/enright/tom/in_silico_dataset"
-export DATA="/hps/nobackup/enright/nanopore/analyses/nanocompore_paper_analyses/in_silico_dataset/data/simulated_datasets2"
-export REFERENCE="/hps/nobackup/enright/nanopore/analyses/nanocompore_paper_analyses/in_silico_dataset/data/references/random_guided_weight.fa"
+export DATA="/nfs/leia/research/enright/nanopore/analyses/nanocompore_paper_analyses/in_silico_dataset/data/simulated_datasets"
+export REFERENCE="/nfs/leia/research/enright/nanopore/analyses/nanocompore_paper_analyses/in_silico_dataset/data/references/random_guided_weight.fa"
 export OUT="$BASEDIR/analysis"
 mkdir -p $OUT
 
-source activate $BASEDIR/conda_env
+source "/hps/nobackup/enright/tom/miniconda3/etc/profile.d/conda.sh"
+conda activate $BASEDIR/conda_env
 mkdir -p $OUT/nanocompore/
 mkdir -p $OUT/logs/
 bgadd -L 9 /insilico
 
-for ds in $(seq -w 2 145); do
+for ds in $(seq -w 2 595); do
 	ref=$DATA/dataset_0001
 	samp_name="dataset_0$ds"
 	samp=$DATA/$samp_name
@@ -22,7 +23,7 @@ for ds in $(seq -w 2 145); do
 		--label2 Dataset \
 		--fasta $REFERENCE \
 		--outpath $OUT/nanocompore/$samp_name \
-		--comparison_methods GMM,KS \
+		--comparison_methods GMM,KS,MW,TT \
 		--sequence_context 2 \
 		--sequence_context_weights harmonic \
 		--logit \
