@@ -19,8 +19,8 @@ ggplot(aes(x=FPR, y=TPR, colour=factor(mod_reads_freq), group=mod_reads_freq)) +
 	facet_grid(intensity_mod_loc~dwell_mod_loc, labeller = label_both) +
 	xlab("False Positive Rate") + 
 	ylab("True Positive Rate") + 
-	labs(title="GMM test", color="Fraction of modified reads") +
-	theme_bw(21)
+	labs(title="GMM test", color="Fraction of\nmodified reads") +
+	theme_bw(16)
 dev.off()
 
 pdf("ROC_ks_intensity.pdf", width=12, height=12)
@@ -31,7 +31,7 @@ ggplot(aes(x=FPR, y=TPR, colour=factor(mod_reads_freq), gro_p=mod_reads_freq)) +
 	xlab("False Positive Rate") + 
 	ylab("True Positive Rate") + 
 	labs(title="KS intensity test", color="Fraction of modified reads") +
-	theme_bw(21)
+	theme_bw(16)
 dev.off()
 
 pdf("ROC_ks_dwell.pdf", width=12, height=12)

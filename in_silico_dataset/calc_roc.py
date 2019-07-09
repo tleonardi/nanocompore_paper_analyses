@@ -12,7 +12,7 @@ basedir="/hps/nobackup/enright/tom/in_silico_dataset/analysis/nanocompore/"
 tol=3
 
 # Modified positions annotation
-mod_pos_file = "/hps/nobackup/enright/nanopore/analyses/nanocompore_paper_analyses/in_silico_dataset/data/simulated_datasets2/dataset_0001/reads_1_pos.tsv"
+mod_pos_file = "/nfs/leia/research/enright/nanopore/analyses/nanocompore_paper_analyses/in_silico_dataset/data/simulated_datasets/dataset_0595/reads_1_pos.tsv"
 mod_pos=dict()
 with open(mod_pos_file) as tsvfile:
     reader = csv.reader(tsvfile, delimiter='\t')
@@ -43,6 +43,10 @@ for ds in datasets:
                         GMM_anova_pvalue = 1
                     else:
                         GMM_anova_pvalue = float(row.GMM_anova_pvalue)
+                    if np.isnan(float(row.GMM_logit_pvalue)): 
+                        GMM_logit_pvalue = 1
+                    else:
+                        GMM_logit_pvalue = float(row.GMM_logit_pvalue)
                     if np.isnan(float(row.KS_dwell_pvalue)): 
                         KS_dwell_pvalue = 1
                     else:
@@ -52,7 +56,9 @@ for ds in datasets:
                     else:
                         KS_intensity_pvalue = float(row.KS_intensity_pvalue)
                     if(GMM_anova_pvalue<=thr):
-                        positives_list[row.ref_id]["GMM"][thr].add(int(row.pos))
+                        positives_list[row.ref_id]["GMM_anova"][thr].add(int(row.pos))
+                    if(GMM_logit_pvalue<=thr):
+                        positives_list[row.ref_id]["GMM_logit"][thr].add(int(row.pos))
                     if(KS_dwell_pvalue<=thr):
                         positives_list[row.ref_id]["KS_dwell"][thr].add(int(row.pos))
                     if(KS_intensity_pvalue<=thr):
