@@ -1,0 +1,9 @@
+[submodule "nanocompore_pipelines/METTL3_KD_polyA"]
+	path = nanocompore_pipelines/METTL3_KD_polyA
+	url = git@github.com:tleonardi/nanocompore_pipeline.git
+[submodule "nanocompore_pipelines/METTL3_KD_ncRNAs"]
+	path = nanocompore_pipelines/METTL3_KD_ncRNAs
+	url = git@github.com:tleonardi/nanocompore_pipeline.git
+[submodule "nanocompore_pipelines/IVT_7SK"]
+	path = nanocompore_pipelines/IVT_7SK
+	url = git@github.com:tleonardi/nanocompore_pipeline.git
