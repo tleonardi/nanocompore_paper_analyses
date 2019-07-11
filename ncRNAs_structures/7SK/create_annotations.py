@@ -4,35 +4,46 @@ from collections import *
 from matplotlib import cm                                                                                                           
 from matplotlib import colors
 from string import ascii_letters
+import sys
 
-nanocomp_res="/home/tleonardi/programming/bioinformatics/nanocompore_paper_analyses/7sk/data/KD/nanocompore/out_nanocompore_results.tsv"
-nanocomp_bed="/home/tleonardi/programming/bioinformatics/nanocompore_paper_analyses/7sk/data/KD/references/reference_transcriptome.bed"
-sto="/home/tleonardi/programming/bioinformatics/nanocompore_paper_analyses/ncRNAs_structures/7SK/out.sto"
+#nanocomp_res="/home/tleonardi/programming/bioinformatics/nanocompore_paper_analyses/7sk/data/DKC1/nanocompore/out_nanocompore_results.tsv"
+#nanocomp_bed="/home/tleonardi/programming/bioinformatics/nanocompore_paper_analyses/7sk/data/IVT/references/reference_transcriptome.bed"
+#sto="/home/tleonardi/programming/bioinformatics/nanocompore_paper_analyses/ncRNAs_structures/7SK/7sk_mettl3.sto"
+
+nanocomp_res=sys.argv[1]
+nanocomp_bed=sys.argv[2]
+sto=sys.argv[3]
+tx=sys.argv[4]
+thr=float(sys.argv[5])
+pval_col=int(sys.argv[6])
+real_start=int(sys.argv[7])
+#real_start=52995620
+
+print(nanocomp_res)
+
 rfam_id="X04236.1/1-328"
 
 nanocomp_start=0
-real_start=52995620
 symbol="M"
-pval_col=8
-thr=0.0001
 
 with open(nanocomp_bed) as f:
     for line in f:
         line=line.split('\t')
-        if(line[3] == "ENST00000636484"): nanocomp_start=int(line[1])
+        if(line[3] == tx): nanocomp_start=int(line[1])
 
 offset=nanocomp_start-real_start+2
-print(f"offset: {offset}")
+#print(f"offset: {offset}")
 
 pos=dict()
 with open(nanocomp_res) as f:
     f.readline()
     for line in f:
         line=line.split('\t')
-        if(float(line[pval_col])<thr): 
-            pos[int(line[0])+offset] = float(line[pval_col])
+        if(line[3]== tx ):
+            if(float(line[pval_col])<thr): 
+                pos[int(line[0])+offset] = float(line[pval_col])
 
-print(f"positions to annotate: {pos}")
+#print(f"positions to annotate: {pos}")
 
 
 all=defaultdict(list)
@@ -44,12 +55,14 @@ min_p={k:-np.log10(min(v)) for k,v in all.items()}
 
 # Make color map
 cmap = cm.get_cmap('YlOrRd', len(ascii_letters)) 
-norm=colors.Normalize(vmin=min(min_p.values()), vmax=max(min_p.values())+3, clip=True) 
+max_min_p = max(min_p.values())
+if max_min_p>30: max_min_p=30
+norm=colors.Normalize(vmin=min(min_p.values()), vmax=max_min_p+3, clip=True) 
 cols=dict()
 for i in range(len(ascii_letters)):
     cols[ascii_letters[i]] = cmap(i)
 
-print(cols)
+#print(cols)
 # Center kmers
 pos = [k for i in pos.keys() for k in range(i,i+5)]
 
@@ -79,16 +92,15 @@ with open(sto) as f:
                     else:
                         annot+="."
                         annot_p+="."
-print(seq)
-print(annot)
-print(annot_p)
+print("#=GC R2R_XLABEL_m            ", annot)
+print("#=GC R2R_XLABEL_p            ", annot_p)
 
 for k,v in cols.items():
     if k in used_key:
         r=int(v[0]*255)
         g=int(v[1]*255)
         b=int(v[2]*255)
-        print(f"{k} rgb:{r},{g},{b}")
+        print(f"#=GF R2R_oneseq X04236.1/1-328 shade_along_backbone p:{k} rgb:{r},{g},{b}")
 #REAL_START="52995620"
 #NANOCOMP_start=$(awk '$4=="ENST00000636484"{print $2}' $NANOCOMP_BED)
 #
