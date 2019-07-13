@@ -17,11 +17,10 @@ tx=sys.argv[4]
 thr=float(sys.argv[5])
 pval_col=int(sys.argv[6])
 real_start=int(sys.argv[7])
+rfam_id=sys.argv[8]
 #real_start=52995620
 
-print(nanocomp_res)
 
-rfam_id="X04236.1/1-328"
 
 nanocomp_start=0
 symbol="M"
@@ -100,7 +99,7 @@ for k,v in cols.items():
         r=int(v[0]*255)
         g=int(v[1]*255)
         b=int(v[2]*255)
-        print(f"#=GF R2R_oneseq X04236.1/1-328 shade_along_backbone p:{k} rgb:{r},{g},{b}")
+        print(f"#=GF R2R_oneseq {rfam_id} shade_along_backbone p:{k} rgb:{r},{g},{b}")
 #REAL_START="52995620"
 #NANOCOMP_start=$(awk '$4=="ENST00000636484"{print $2}' $NANOCOMP_BED)
 #
