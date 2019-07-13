@@ -9,7 +9,7 @@ nanocomp_res_kd="${BASEDIR}/nanocompore_pipelines/METTL3_KD_ncRNAs/results/nanoc
 nanocomp_res_ivt="${BASEDIR}/nanocompore_pipelines/IVT_7SK/results/nanocompore/out_nanocompore_results.tsv"
 nanocomp_res_dkc="${BASEDIR}/nanocompore_pipelines/DKC1_ncRNAs/results/nanocompore/out_nanocompore_results.tsv"
 #nanocomp_res_dkc="${BASEDIR}/7sk/data/DKC1/nanocompore/out_nanocompore_results.tsv"
-nanocomp_bed="${BASEDIR}/7sk/data/IVT/references/reference_transcriptome.bed"
+nanocomp_bed="${BASEDIR}/profiles/old/data/IVT/references/reference_transcriptome.bed"
 
 template="${WD}/rmrp.sto" 
 tx="ENST00000602361"
