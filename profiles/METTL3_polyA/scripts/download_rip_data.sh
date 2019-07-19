@@ -1,0 +1,6 @@
+wget -O data/m6A_KD_68_Rep1.bw "http://ucsc:ucscD474@tk-pc1.gurdon.cam.ac.uk/UCSC/METTL3_Nanopore/hg38/sr554_0093_0003_normalised.bigwig"
+wget -O data/m6A_KD_68_Rep2.bw "http://ucsc:ucscD474@tk-pc1.gurdon.cam.ac.uk/UCSC/METTL3_Nanopore/hg38/sr554_0093_0004_normalised.bigwig"
+wget -O data/m6A_KD_70_Rep1.bw "http://ucsc:ucscD474@tk-pc1.gurdon.cam.ac.uk/UCSC/METTL3_Nanopore/hg38/sr554_0093_0005_normalised.bigwig"
+wget -O data/m6A_KD_70_Rep2.bw "http://ucsc:ucscD474@tk-pc1.gurdon.cam.ac.uk/UCSC/METTL3_Nanopore/hg38/sr554_0093_0006_normalised.bigwig"
+wget -O data/m6A_CT_Rep1.bw "http://ucsc:ucscD474@tk-pc1.gurdon.cam.ac.uk/UCSC/METTL3_Nanopore/hg38/sr554_0093_0001_normalised.bigwig"
+wget -O data/m6A_CT_Rep2.bw "http://ucsc:ucscD474@tk-pc1.gurdon.cam.ac.uk/UCSC/METTL3_Nanopore/hg38/sr554_0093_0002_normalised.bigwig"
