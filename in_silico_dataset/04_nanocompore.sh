@@ -1,5 +1,5 @@
 #!/bin/bash
-export BASEDIR="/hps/nobackup/enright/tom/in_silico_dataset"
+export BASEDIR="/hps/nobackup/enright/tom/nanocompore_paper_analyses/in_silico_dataset/"
 export DATA="/nfs/leia/research/enright/nanopore/analyses/nanocompore_paper_analyses/in_silico_dataset/data/simulated_datasets"
 export REFERENCE="/nfs/leia/research/enright/nanopore/analyses/nanocompore_paper_analyses/in_silico_dataset/data/references/random_guided_weight.fa"
 export OUT="$BASEDIR/analysis"
@@ -33,4 +33,5 @@ for ds in $(seq -w 2 595); do
 	bsub -g /insilico -q standard -eo $OUT/logs/${samp_name}.err -oo $OUT/logs/${samp_name}.out -M 16000 -n 10 -R 'rusage[mem=16000]' $COMMAND
 done
 
+cp $DATA/index.tsv $OUT
 
