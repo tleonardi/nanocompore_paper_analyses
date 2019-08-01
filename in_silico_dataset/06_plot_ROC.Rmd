@@ -3,9 +3,11 @@
 library(tidyverse)
 library(zoo)
 
-trials_meta <- read_tsv("/nfs/leia/research/enright/nanopore/analyses/nanocompore_paper_analyses/in_silico_dataset/data/simulated_datasets/index.tsv")
+ROOTDIR=system2("git", args=c("rev-parse", "--show-toplevel"), stdout=T)
 
-combined <- read_tsv("/hps/nobackup/enright/tom/nanocompore_paper_analyses/in_silico_dataset/analysis/roc_data/all_datasets.txt", col_names=c("dataset_id", "method", "threshold", "TPR", "FPR")) %>% left_join(., trials_meta)
+trials_meta <- read_tsv(paste0(ROOTDIR, "/in_silico_dataset/data/simulated_datasets2/index.tsv"))
+
+combined <- read_tsv(paste0(ROOTDIR, "/in_silico_dataset/analysis/roc_data/all_datasets.txt"), col_names=c("dataset_id", "method", "threshold", "TPR", "FPR")) %>% left_join(., trials_meta)
 
 
 #combined <- group_by(combined, dataset_id, method) %>% 
