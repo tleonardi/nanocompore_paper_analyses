@@ -10,3 +10,7 @@
 [submodule "nanocompore_pipelines/DKC1_ncRNAs"]
 	path = nanocompore_pipelines/DKC1_ncRNAs
 	url = git@github.com:tleonardi/nanocompore_pipeline.git
+[submodule "nanocompore_pipelines/TRM5_KO_polyA"]
+	path = nanocompore_pipelines/TRM5_KO_polyA
+	url = git@github.com:tleonardi/nanocompore_pipeline.git
+	branch = TRM5_KO_polyA
