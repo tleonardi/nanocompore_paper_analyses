@@ -31,5 +31,6 @@ dev.off()
 # Applying a p-value threshold of 0.01 (GMM+logit method, see Materials and Methods) we found 6,021 significant sites in 437 distinct transcripts, averaging at 13.8 m6A sites per transcript (Figure 4A,B).  
 # mutate(n_sig, Ave=Sites/Tx) %>% filter(Thr==0.01)
 
-filter(nanocompore, ref_id=="ENST00000646664") %>% dplyr::filter(`GMM_logit_pvalue`<0.01)
+#filter(nanocompore, ref_id=="ENST00000646664") %>% dplyr::filter(`GMM_logit_pvalue`<0.01) %>% nrow
+#filter(nanocompore, ref_id %in% c("ENST00000425660","ENST00000462494","ENST00000646664")) %>% dplyr::filter(`GMM_logit_pvalue`<0.01) %>% arrange(GMM_logit_pvalue) %>% dplyr::select(pos, genomicPos, ref_kmer, ref_id, GMM_logit_pvalue)
 
