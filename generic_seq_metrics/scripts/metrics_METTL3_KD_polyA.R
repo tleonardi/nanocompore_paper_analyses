@@ -12,7 +12,9 @@ counts %>% group_by(Sample, n_reads) %>% summarise(n_molecules=n()) %>% arrange(
 dev.off()
 
 # approximately 50% of the total number of reads mapping to transcripts with coverage less than or equal to 3x.
-#counts %>% group_by(Sample, n_reads) %>% summarise(n_molecules=n()) %>% arrange(Sample, n_reads) %>% mutate(cumsum=cumsum(n_molecules)/sum(n_molecules)) %>% filter(n_reads<11) %>% group_by(n_reads) %>% summarise(cumcum=mean(cumsum)) 
+# counts %>% group_by(Sample, n_reads) %>% summarise(n_molecules=n()) %>% arrange(Sample, n_reads) %>% mutate(cumsum=cumsum(n_molecules)/sum(n_molecules)) %>% filter(n_reads<31) %>% group_by(n_reads) %>% summarise(cumcum=mean(cumsum))  %>% data.frame
+# and 11% of reads mapping to transcripts with coverage >=30x
+# counts %>% group_by(Sample, n_reads) %>% summarise(n_molecules=n()) %>% arrange(Sample, n_reads) %>% mutate(cumsum=cumsum(n_molecules)/sum(n_molecules)) %>% filter(n_reads==30) %>% group_by(n_reads) %>% summarise(cumsum=mean(cumsum))  %>% mutate(x=1-cumsum) 
 
 pdf(paste0(BASEDIR, "/generic_seq_metrics/results/METTL3_KD_polyA/tot_reads.pdf"))
 counts %>% group_by(Sample) %>% summarise(n_reads=sum(n_reads)) %>% ggplot(aes(x=Sample, y=n_reads, label=n_reads)) + geom_col() + geom_text(aes(y=n_reads+50000)) + ylab("Total number of mapped reads") + theme_bw(18)
