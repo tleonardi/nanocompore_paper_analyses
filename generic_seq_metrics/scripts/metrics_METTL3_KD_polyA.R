@@ -37,7 +37,7 @@ dev.off()
 
 
 # good correlation between replicates (R2  of 0.757 and  0.937 for WT and KD respectively)
-# counts %>% group_by(Sample) %>% mutate(n_reads=1e6*n_reads/sum(n_reads)) %>% separate(Sample, c("Condition", "Rep")) %>% reshape2::dcast(Tx+Condition~Rep, value.var="n_reads", fill=0) %>% group_by(Condition) %>% do(a = lm(`1`~`2`,data=.)) %>% glance(., a)
+#counts %>% group_by(Sample) %>% mutate(n_reads=1e6*n_reads/sum(n_reads)) %>% separate(Sample, c("Condition", "Rep")) %>% reshape2::dcast(Tx+Condition~Rep, value.var="n_reads", fill=0) %>% group_by(Condition) %>% do(a = lm(`1`~`2`,data=.)) %>% broom::glance(., a)
 
 
 pdf(paste0(BASEDIR, "/generic_seq_metrics/results/METTL3_KD_polyA/aggregated_scatterplot.pdf"))
@@ -45,6 +45,6 @@ counts %>% group_by(Sample) %>% mutate(n_reads=1e6*n_reads/sum(n_reads)) %>% sep
 dev.off()
 
 #  we observed very good correlation between WT and KD after averaging the replicates (R2  of 0.969)
-#counts %>% group_by(Sample) %>% mutate(n_reads=1e6*n_reads/sum(n_reads)) %>% separate(Sample, c("Condition", "Rep")) %>% reshape2::dcast(Tx+Condition~Rep, value.var="n_reads", fill=0) %>% mutate(mean_counts=(`1`+`2`)/2) %>% reshape2::dcast(Tx~Condition, value.var="mean_counts") %>% do(a = lm(WT~KD,data=.)) %>% glance(., a)
+#counts %>% group_by(Sample) %>% mutate(n_reads=1e6*n_reads/sum(n_reads)) %>% separate(Sample, c("Condition", "Rep")) %>% reshape2::dcast(Tx+Condition~Rep, value.var="n_reads", fill=0) %>% mutate(mean_counts=(`1`+`2`)/2) %>% reshape2::dcast(Tx~Condition, value.var="mean_counts") %>% do(a = lm(WT~KD,data=.)) %>% broom::glance(., a)
 
 #counts %>% group_by(Sample) %>%  reshape2::dcast(Tx~Sample, value.var="n_reads", fill=0) %>% filter(WT_1>30, WT_2>30, KD_1>30, KD_2>30) %>% nrow
