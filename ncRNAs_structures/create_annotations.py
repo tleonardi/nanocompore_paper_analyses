@@ -55,7 +55,7 @@ min_p={k:-np.log10(min(v)) for k,v in all.items()}
 # Make color map
 cmap = cm.get_cmap('YlOrRd', len(ascii_letters)) 
 max_min_p = max(min_p.values())
-if max_min_p>30: max_min_p=30
+if max_min_p>10: max_min_p=10
 norm=colors.Normalize(vmin=min(min_p.values()), vmax=max_min_p+3, clip=True) 
 cols=dict()
 for i in range(len(ascii_letters)):

@@ -6,10 +6,8 @@
 BASEDIR=$(git rev-parse --show-toplevel)
 WD="${BASEDIR}/ncRNAs_structures/7SK/"
 nanocomp_res_kd="${BASEDIR}/nanocompore_pipelines/METTL3_KD_ncRNAs/results/nanocompore/out_nanocompore_results.tsv"
-#nanocomp_res_kd="${BASEDIR}/7sk/data/KD/nanocompore/out_nanocompore_results.tsv"
 nanocomp_res_ivt="${BASEDIR}/nanocompore_pipelines/IVT_7SK/results/nanocompore/out_nanocompore_results.tsv"
-#nanocomp_res_dkc="${BASEDIR}/nanocompore_pipelines/DKC1_ncRNAs/results/nanocompore/out_nanocompore_results.tsv"
-nanocomp_res_dkc="${BASEDIR}/7sk/data/DKC1/nanocompore/out_nanocompore_results.tsv"
+nanocomp_res_dkc="${BASEDIR}/nanocompore_pipelines/DKC1_ncRNAs/results/nanocompore/out_nanocompore_results.tsv"
 nanocomp_bed="${BASEDIR}/profiles/old/data/IVT/references/reference_transcriptome.bed"                                                                                                                                              
 template="${WD}/7sk.sto" 
 tx="ENST00000636484"
@@ -24,6 +22,6 @@ cat <(head -n -1 $template) ${WD}/7sk_custom_annots.txt <(python ${WD}/../create
 
 cat <(head -n -1 $template) ${WD}/7sk_custom_annots.txt <(python ${WD}/../create_annotations.py $nanocomp_res_ivt $nanocomp_bed $template $tx 0.01 6 $real_start $rfam_id) <(echo //) > ${WD}/7sk_ivt.sto
 
-cat <(head -n -1 $template) ${WD}/7sk_custom_annots.txt <(python ${WD}/../create_annotations.py $nanocomp_res_dkc $nanocomp_bed $template $tx 0.1 8 $real_start $rfam_id) <(echo //) > ${WD}/7sk_dkc1.sto
+cat <(head -n -1 $template) ${WD}/7sk_custom_annots.txt <(python ${WD}/../create_annotations.py $nanocomp_res_dkc $nanocomp_bed $template $tx 0.01 8 $real_start $rfam_id) <(echo //) > ${WD}/7sk_dkc1.sto
 
 r2r ${WD}/7sk.meta ${WD}/7sk.pdf
