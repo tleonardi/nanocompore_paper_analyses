@@ -29,7 +29,7 @@ all_datasets %>%
 	ggplot(aes(x=pos, y=-log10(value), colour=variable)) + 
 		geom_line(size=0.4) + 
 		facet_wrap(~ref_id, scales="free", ncol=1) +
-		geom_hline(yintercept=-log10(0.05), linetype=2) +
+		geom_hline(yintercept=-log10(0.01), linetype=2) +
 		xlab("Position along RNA") +
 		ylab("-log10(p-value)") +
 		scale_color_discrete(name="") +
@@ -45,7 +45,7 @@ all_datasets %>%
 	ggplot(aes(x=pos, y=-log10(value), colour=variable)) + 
 		geom_line(size=0.4) + 
 		facet_wrap(~ref_id, ncol=1, scales="free") +
-		geom_hline(yintercept=-log10(0.05), linetype=2) +
+		geom_hline(yintercept=-log10(0.01), linetype=2) +
 		xlab("Position along RNA") +
 		ylab("-log10(p-value)") +
 		scale_color_discrete(name="") +
@@ -59,7 +59,7 @@ all_datasets %>%
 	ggplot(aes(x=pos, y=-log10(value), colour=variable)) + 
 		geom_line(size=0.4) + 
 		facet_grid(variable~ref_id, scales="free") +
-		geom_hline(yintercept=-log10(0.05), linetype=2) +
+		geom_hline(yintercept=-log10(0.01), linetype=2) +
 		xlab("Position along RNA") +
 		ylab("-log10(p-value)") +
 		scale_color_discrete(name="") +
@@ -73,3 +73,5 @@ gplots::venn(list(KD=filter(kd_logit, METTL3_KD<0.01) %>% pull(pos), IVT=filter(
 dev.off()
 
 
+# 24 sig sites at the 0.01
+# filter(all_datasets, METTL3_KD<0.01)  %>% data.frame %>% nrow
