@@ -106,3 +106,6 @@ venv.bak/
 # Large data
 */datasets
 */data
+
+*.sto
+conda_environments/
