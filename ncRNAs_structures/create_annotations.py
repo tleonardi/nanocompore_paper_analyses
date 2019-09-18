@@ -1,7 +1,9 @@
 #!/bin/python
 import numpy as np
 from collections import *
-from matplotlib import cm                                                                                                           
+import matplotlib as mpl
+from matplotlib import cm
+import matplotlib.pyplot as plt
 from matplotlib import colors
 from string import ascii_letters
 import sys
@@ -18,6 +20,7 @@ thr=float(sys.argv[5])
 pval_col=int(sys.argv[6])
 real_start=int(sys.argv[7])
 rfam_id=sys.argv[8]
+scale_outfile=sys.argv[9]
 #real_start=52995620
 
 
@@ -56,11 +59,17 @@ min_p={k:-np.log10(min(v)) for k,v in all.items()}
 cmap = cm.get_cmap('YlOrRd', len(ascii_letters)) 
 max_min_p = max(min_p.values())
 if max_min_p>10: max_min_p=10
-norm=colors.Normalize(vmin=min(min_p.values()), vmax=max_min_p+3, clip=True) 
+norm=colors.Normalize(vmin=min(min_p.values()), vmax=max_min_p, clip=True) 
 cols=dict()
 for i in range(len(ascii_letters)):
     cols[ascii_letters[i]] = cmap(i)
 
+
+fig, ax = plt.subplots(figsize=(6, 1))
+fig.subplots_adjust(bottom=0.5)
+cb1 = mpl.colorbar.ColorbarBase(ax, cmap=cmap, norm=norm, orientation='horizontal', extend="max")
+cb1.set_label('Some Units')
+fig.savefig(scale_outfile)
 #print(cols)
 # Center kmers
 pos = [k for i in pos.keys() for k in range(i,i+5)]
