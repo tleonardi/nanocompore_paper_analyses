@@ -112,10 +112,6 @@ reshape2::melt(id.vars=c("pos", "ref_id")) %>% mutate(value=case_when(is.na(valu
 
 dev.off()
 
-pdf("venn.pdf")
-gplots::venn(list(KD=filter(kd_logit, METTL3_KD<0.01) %>% pull(pos), IVT=filter(ivt_logit, IVT<0.01) %>% pull(pos)))
-dev.off()
-
 
 # 24 sig sites at the 0.01
 # filter(all_datasets, METTL3_KD<0.01)  %>% data.frame %>% nrow
