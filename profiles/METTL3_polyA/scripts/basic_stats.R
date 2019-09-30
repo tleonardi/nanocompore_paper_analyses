@@ -32,5 +32,11 @@ dev.off()
 # mutate(n_sig, Ave=Sites/Tx) %>% filter(Thr==0.01)
 
 #filter(nanocompore, ref_id=="ENST00000646664") %>% dplyr::filter(`GMM_logit_pvalue`<0.01) %>% nrow
-#filter(nanocompore, ref_id %in% c("ENST00000425660","ENST00000462494","ENST00000646664")) %>% dplyr::filter(`GMM_logit_pvalue`<0.01) %>% arrange(GMM_logit_pvalue) %>% dplyr::select(pos, genomicPos, ref_kmer, ref_id, GMM_logit_pvalue)
-
+#filter(nanocompore, ref_id=="ENST00000331789") %>% dplyr::filter(`GMM_logit_pvalue`<0.01) %>% nrow
+#filter(nanocompore, ref_id=="ENST00000425660") %>% dplyr::filter(`GMM_logit_pvalue`<0.01) %>% nrow
+#filter(nanocompore, ref_id=="ENST00000462494") %>% dplyr::filter(`GMM_logit_pvalue`<0.01) %>% nrow
+#
+#filter(nanocompore, ref_id=="ENST00000331789") %>% dplyr::filter(`GMM_logit_pvalue`<0.01) %>% arrange(GMM_logit_pvalue)
+#
+#filter(nanocompore, ref_id %in% c("ENST00000425660","ENST00000462494","ENST00000646664", "ENST00000331789")) %>% dplyr::filter(`GMM_logit_pvalue`<0.01) %>% arrange(GMM_logit_pvalue) %>% dplyr::select(pos, genomicPos, ref_kmer, ref_id, GMM_logit_pvalue)
+#
