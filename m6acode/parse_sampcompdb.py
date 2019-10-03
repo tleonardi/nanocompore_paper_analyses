@@ -8,9 +8,9 @@ db = SampCompDB("out/out_SampComp.db", fasta_fn="reference_transcriptome.fa")
 poi_list = [1533, 650, 1322]
 tx='ENST00000331789'
 
-for pos in poi_list:
-    p1=db.plot_position(ref_id=tx, pos=pos, plot_style='seaborn-whitegrid', figsize=[14,10], pointSize=10)
-    p1[0].savefig("Actb_"+str(pos)+".svg")
+#for pos in poi_list:
+#    p1=db.plot_position(ref_id=tx, pos=pos, plot_style='seaborn-whitegrid', figsize=[14,10], pointSize=10)
+#    p1[0].savefig("Actb_"+str(pos)+".svg")
 
 modified_reads=dict()
 outfile = open("out.tsv", "w")
