@@ -5,11 +5,17 @@ from collections import *
 from nanocompore.common import *
 
 db = SampCompDB("out/out_SampComp.db", fasta_fn="reference_transcriptome.fa")
-modified_reads=dict()
 poi_list = [1533, 650, 1322]
+tx='ENST00000331789'
+
+for pos in poi_list:
+    p1=db.plot_position(ref_id=tx, pos=pos, plot_style='seaborn-whitegrid', figsize=[14,10], pointSize=10)
+    p1[0].savefig("Actb_"+str(pos)+".svg")
+
+modified_reads=dict()
 outfile = open("out.tsv", "w")
+outfile2 = open("out_data.tsv", "w")
 for poi in poi_list:
-    tx='ENST00000331789'
     model=db[tx][poi]['txComp']['GMM_model']['model']
 
     data = db[tx][poi]['data']
@@ -43,4 +49,11 @@ for poi in poi_list:
         mod_cluster=1
     for read, p, lab in zip(global_reads, y_pred_prob, Y):
         outfile.write("\t".join([lab, str(poi), read, str(p[mod_cluster])])+"\n")
+    for intensity, dwell, lab, pred, p in zip(global_intensity, global_dwell, Y, y_pred, y_pred_prob):
+        if pred == mod_cluster:
+            pred="Modified"
+        else:
+            pred="Unmodified"
+        outfile2.write("\t".join([str(poi), lab, str(pred), str(p[mod_cluster]), str(intensity), str(dwell)])+'\n')
 outfile.close()
+outfile2.close()
