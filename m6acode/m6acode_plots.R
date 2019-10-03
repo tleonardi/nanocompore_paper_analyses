@@ -6,7 +6,7 @@ ROOTDIR=system2("git", args=c("rev-parse", "--show-toplevel"), stdout=T)
 BASEDIR=paste0(ROOTDIR, "/m6acode/")
 
 # [1533, 650, 1322] 
-p <- read_tsv(paste0(BASEDIR,"out.tsv"), col_names=c("lab", "pos", "read", "p")) %>% mutate(lab=gsub("_[12]", "", lab), pos=paste0("A",pos)) 
+p <- read_tsv(paste0(BASEDIR,"out/out.tsv"), col_names=c("lab", "pos", "read", "p")) %>% mutate(lab=gsub("_[12]", "", lab), pos=paste0("A",pos)) 
 
 wt <- filter(p, lab=="WT") %>%
 	reshape2::dcast(read~pos) %>% 
@@ -68,7 +68,7 @@ mset2df(Result) %>% ggplot(aes(x=Names, y=Size, fill=-log10(pvalue))) + geom_col
 dev.off()
 
 
-dat <- read_tsv(paste0(BASEDIR,"out_data.tsv"), col_names=c("pos", "lab", "cluster", "prob", "intensity", "dwell")) %>% mutate(lab=gsub("_[12]", "", lab), pos=paste0("A",pos+2)) %>%
+dat <- read_tsv(paste0(BASEDIR,"out/out_data.tsv"), col_names=c("pos", "lab", "cluster", "prob", "intensity", "dwell")) %>% mutate(lab=gsub("_[12]", "", lab), pos=paste0("A",pos+2)) %>%
 	mutate(pos=factor(pos, levels=c("A652", "A1324", "A1535"))) %>%
 	mutate(lab=factor(lab, levels=c("WT", "KD"))) %>%
 	group_by(pos) %>% 
