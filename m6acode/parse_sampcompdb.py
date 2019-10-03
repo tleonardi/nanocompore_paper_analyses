@@ -13,8 +13,8 @@ tx='ENST00000331789'
 #    p1[0].savefig("Actb_"+str(pos)+".svg")
 
 modified_reads=dict()
-outfile = open("out.tsv", "w")
-outfile2 = open("out_data.tsv", "w")
+outfile = open("out/out.tsv", "w")
+outfile2 = open("out/out_data.tsv", "w")
 for poi in poi_list:
     model=db[tx][poi]['txComp']['GMM_model']['model']
 
