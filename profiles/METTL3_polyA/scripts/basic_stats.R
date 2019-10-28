@@ -29,7 +29,7 @@ dev.off()
 # nanocompore %>% pull(ref_id) %>% unique %>% length
 
 # Applying a p-value threshold of 0.01 (GMM+logit method, see Materials and Methods) we found 6,021 significant sites in 437 distinct transcripts, averaging at 13.8 m6A sites per transcript (Figure 4A,B).  
-# mutate(n_sig, Ave=Sites/Tx) %>% filter(Thr==0.01)
+mutate(n_sig, Ave=Sites/Tx) %>% filter(Thr==0.01)
 
 #filter(nanocompore, ref_id=="ENST00000646664") %>% dplyr::filter(`GMM_logit_pvalue`<0.01) %>% nrow
 #filter(nanocompore, ref_id=="ENST00000331789") %>% dplyr::filter(`GMM_logit_pvalue`<0.01) %>% nrow
@@ -40,3 +40,27 @@ dev.off()
 #
 #filter(nanocompore, ref_id %in% c("ENST00000425660","ENST00000462494","ENST00000646664", "ENST00000331789")) %>% dplyr::filter(`GMM_logit_pvalue`<0.01) %>% arrange(GMM_logit_pvalue) %>% dplyr::select(pos, genomicPos, ref_kmer, ref_id, GMM_logit_pvalue)
 #
+
+#ol = c(1,2,10,12,13,34,35,36,3,50)
+count_clust <- function(unorder_list, tol=1){
+	if(length(unorder_list)==1){
+		return(1)
+	}
+	l = unorder_list[order(unorder_list)]
+	co=1
+	for(i in seq(1:(length(l)-1))){
+		if(l[[i+1]]>(l[[i]]+tol)){
+			co = co+1
+		}
+	}
+	return(co)
+}
+
+# 4094 clusters:
+filter(nanocompore, GMM_logit_pvalue<0.01) %>% group_by(ref_id) %>% summarise(cl=count_clust(pos, 5)) %>% pull(cl) %>% sum
+
+# average 9.368421
+filter(nanocompore, GMM_logit_pvalue<0.01) %>% group_by(ref_id) %>% summarise(cl=count_clust(pos, 5)) %>% pull(cl) %>% mean
+
+# 61 clusters in b actin
+filter(nanocompore, GMM_logit_pvalue<0.01) %>% group_by(ref_id) %>% summarise(cl=count_clust(pos, 5)) %>% filter(ref_id=="ENST00000646664")

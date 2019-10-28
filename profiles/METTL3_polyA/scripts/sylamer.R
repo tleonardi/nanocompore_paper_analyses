@@ -21,3 +21,7 @@ syl[syl$label=="Other", "label"] <- NA
 pdf(paste0(RESULTS, "/sylamer.pdf"), width=12)
 filter(syl, upper%in%top_100_auc) %>% ggplot(aes(x=variable, y=value, group=upper, colour=label)) + geom_line(size=0.3) +geom_vline(xintercept=score_thr, size=0.5, linetype=2) + theme_classic(24) + xlab("Ranked sequences") + ylab("Hypergeometric p-value\n(-log10)") + labs(colour="Motif") + theme(axis.line = element_line(colour = 'black', size = 0.5))
 dev.off() 
+
+syl_fc <- read_tsv(paste0(BASEDIR, "/sylamer_full.lfc.out")) %>% reshape2::melt() %>% mutate(variable=as.numeric(as.character(variable)))
+filter(syl, upper%in% top_auc, variable<=score_thr)
+filter(syl_fc, upper%in% top_auc, variable<=score_thr) %>% mutate(FC=2^value)
