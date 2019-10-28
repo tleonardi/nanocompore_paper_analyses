@@ -26,6 +26,7 @@ thr=0.5
 intersections <- list(Pos650=filter(p, lab=="WT", pos=="A650", p>thr) %>% pull(read), 
 		      Pos1322=filter(p, lab=="WT", pos=="A1322", p>thr) %>% pull(read), 
 		      Pos1533=filter(p, lab=="WT", pos=="A1533", p>thr) %>% pull(read))
+n=filter(p, lab=="WT", p>thr) %>% pull(read) %>% unique %>% length
 
 #mat <- filter(p, lab=="WT") %>%
 #	reshape2::dcast(read~pos) %>% 
@@ -53,7 +54,6 @@ ggarrange(cowplot::plot_grid(wt, kd, ncol=2, nrow=1, align="v", axis="lrt", labe
 ggplot(p, aes(x=p, fill=lab)) + geom_density(colour="black", alpha=0.4) + facet_wrap(~pos, ncol=1) + theme_bw(22)
 upset(fromList(intersections), text.scale=1.3)
 
-n=length(unique(p$read))
 Result=supertest(intersections,n=n)
 #plot the intersections with a split y-axis
 #show elements of the intersections with no more than 20 elements
