@@ -7,7 +7,12 @@ NANOCOMPORE_FULL="${BASEDIR}/nanocompore_pipelines/METTL3_KD_polyA/results/nanoc
 REF_TRANSCRIPTOME="${BASEDIR}/nanocompore_pipelines/METTL3_KD_polyA/results/references/reference_transcriptome.bed"
 GENOME="/home/tleonardi/nobackup/Homo_sapiens.GRCh38.dna.toplevel.fa"
 TRANSCRIPTOME="/home/tleonardi/nobackup/Homo_sapiens.GRCh38.94.chr.bed"
-conda activate $BASEDIR/conda_environments/star
+
+if [[ -d $BASEDIR/conda_environments/star ]]; then
+	conda activate $BASEDIR/conda_environments/star
+else
+	conda env create -f $BASEDIR/conda_environments/star.yml -p $BASEDIR/conda_environments/star
+fi
 
 mkdir -p $ANALYSIS/fastq
 for bam in $data/*.bam; do
