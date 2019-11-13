@@ -28,9 +28,9 @@ volcano <- nanocompore %>% mutate(LOR=case_when(Logit_LOR=="NC"~0, TRUE~as.numer
 }
 
 
-volcano_abs <- nanocompore %>% mutate(LOR=case_when(Logit_LOR=="NC"~0, TRUE~as.numeric(Logit_LOR))) %>% { ggplot(., aes(x=abs(LOR), y=-log10(GMM_logit_pvalue))) + 
-	geom_point(size=0.9, alpha=0.8) + 
-	ggrepel::geom_text_repel(data=top_n(., 20, -log10(GMM_logit_pvalue)), size=4, aes(label=paste0(hgnc_symbol, "\n", ref_kmer, " (", pos, ")"))) +
+volcano_abs <- nanocompore %>% mutate(LOR=case_when(Logit_LOR=="NC"~0, TRUE~as.numeric(Logit_LOR))) %>% filter(!is.na(GMM_logit_pvalue), GMM_logit_pvalue<0.1) %>% { ggplot(., aes(x=abs(LOR), y=-log10(GMM_logit_pvalue))) + 
+	geom_point(alpha=0.8) + 
+	ggrepel::geom_text_repel(data=top_n(., 15, -log10(GMM_logit_pvalue)), size=6, aes(label=paste0(hgnc_symbol, "\n", ref_kmer, " (", pos, ")"))) +
 	xlab("Logistic regression\nodds ratio") +
 	ylab("Nanocompore p-value (-log10)") +
 	theme_bw(22)

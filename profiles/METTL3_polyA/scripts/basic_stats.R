@@ -64,3 +64,24 @@ filter(nanocompore, GMM_logit_pvalue<0.01) %>% group_by(ref_id) %>% summarise(cl
 
 # 61 clusters in b actin
 filter(nanocompore, GMM_logit_pvalue<0.01) %>% group_by(ref_id) %>% summarise(cl=count_clust(pos, 5)) %>% filter(ref_id=="ENST00000646664")
+
+filter(nanocompore, GMM_logit_pvalue<0.01) %>% filter(ref_id=="ENST00000646664") %>% pull(ref_kmer) %>% table
+
+lab_clust <- function(unorder_list, tol=1){
+	if(length(unorder_list)==1){
+		return(1)
+	}
+	l = unorder_list[order(unorder_list)]
+	co=1
+	res <- c()
+	res[[1]] <- co
+	for(i in seq(2,(length(l)))){
+		if(l[[i]]>(l[[i-1]]+tol)){
+			co = co+1
+		}
+		res[i] <- co
+	}
+	return(res[order(order(unorder_list))])
+}
+
+#filter(nanocompore, GMM_logit_pvalue<0.01) %>% filter(ref_id=="ENST00000646664") %>% mutate(clust=lab_clust(pos, tol=5)) %>% dplyr::select(pos, ref_kmer, clust, GMM_logit_pvalue) %>% group_by(clust) %>% dplyr::slice(which.min(GMM_logit_pvalue))
