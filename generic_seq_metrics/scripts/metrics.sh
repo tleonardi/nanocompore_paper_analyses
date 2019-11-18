@@ -2,7 +2,7 @@
 BASEDIR=$(git rev-parse --show-toplevel)
 
 
-DATASETS="METTL3_KD_polyA TRM5_KO_polyA"
+DATASETS="METTL3_KD_polyA"
 for dataset in $DATASETS; do
 	mkdir -p $BASEDIR/generic_seq_metrics/results/$dataset
 	(
