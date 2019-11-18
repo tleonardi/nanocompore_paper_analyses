@@ -1,16 +1,15 @@
 #!/bin/bash
-export BASEDIR="/hps/nobackup/enright/tom/nanocompore_paper_analyses/in_silico_dataset/"
-export DATA="/nfs/leia/research/enright/nanopore/analyses/nanocompore_paper_analyses/in_silico_dataset/data/simulated_datasets"
-export REFERENCE="/nfs/leia/research/enright/nanopore/analyses/nanocompore_paper_analyses/in_silico_dataset/data/references/random_guided_weight.fa"
+# This script uses bsub to submit jobs to an LSF cluster
+
+export BASEDIR="$(git rev-parse --show-toplevel)/in_silico_dataset/"
+export DATA="$BASEDIR/data/simulated_datasets"
+export REFERENCE="$BASEDIR/data/references/random_guided_weight.fa"
 export OUT="$BASEDIR/analysis"
 mkdir -p $OUT
 
-source "/hps/nobackup/enright/tom/miniconda3/etc/profile.d/conda.sh"
-conda activate $BASEDIR/conda_env
 mkdir -p $OUT/nanocompore/
 mkdir -p $OUT/logs/
 bgadd -L 9 /insilico
-
 for ds in $(seq -w 2 595); do
 	ref=$DATA/dataset_0001
 	samp_name="dataset_0$ds"

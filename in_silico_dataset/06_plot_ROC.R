@@ -1,5 +1,3 @@
-```{r}
-
 library(tidyverse)
 library(zoo)
 
@@ -114,9 +112,6 @@ ggplot(aes(x=FPR, y=TPR, colour=factor(mod_reads_freq), gro_p=mod_reads_freq)) +
 	theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust=0.5))
 dev.off()
 
-```
-
-```{r}
 auroc <- function(TPR, FPR){
 	sens=TPR
 	omspec=FPR
@@ -178,6 +173,3 @@ group_by(combined, method, mod_reads_freq, intensity_mod, dwell_mod) %>%
 	ylab("AUROC") +
 	labs(color="Testing method")
 dev.off()
-
-
-```
