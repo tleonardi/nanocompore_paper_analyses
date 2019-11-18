@@ -7,12 +7,12 @@ import sys
 dataset = sys.argv[1]
 datasets = [dataset]
 # Basedire where nanocompore output is found
-basedir="/hps/nobackup/enright/tom/in_silico_dataset/analysis/nanocompore/"
+basedir="analysis/nanocompore/"
 # Nucleotide tolerance to consider a peak a positive hit
 tol=3
 
 # Modified positions annotation
-mod_pos_file = "/nfs/leia/research/enright/nanopore/analyses/nanocompore_paper_analyses/in_silico_dataset/data/simulated_datasets/dataset_0595/reads_1_pos.tsv"
+mod_pos_file = "data/simulated_datasets/dataset_0595/reads_1_pos.tsv"
 mod_pos=dict()
 with open(mod_pos_file) as tsvfile:
     reader = csv.reader(tsvfile, delimiter='\t')
@@ -21,7 +21,7 @@ with open(mod_pos_file) as tsvfile:
         mod_pos[row[0]] = [ int(i) for i in row[1].split(";")]
 
 # Parse length of references
-ref_file="/hps/nobackup/enright/nanopore/analyses/nanocompore_paper_analyses/in_silico_dataset/data/references/random_guided_weight.fa.fai"
+ref_file="data/references/random_guided_weight.fa.fai"
 ref_lens=dict()
 with open(ref_file) as tsvfile:
     reader = csv.reader(tsvfile, delimiter='\t')
