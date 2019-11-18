@@ -1,7 +1,7 @@
 #!/bin/bash
 BASEDIR=$(git rev-parse --show-toplevel)
 
-conda activate $BASEDIR/m6acode
+conda activate $BASEDIR/conda_envs/m6acode
 
 python generate_new_db_actin.py
 python generate_new_db_7sk.py
