@@ -1,7 +1,7 @@
 #!/bin/python
 # usage: plot_results.py dbpath
 import sys
-basedir = "/hps/nobackup/enright/tom/nanocompore_paper_analyses/"
+basedir = ""
 dbpath = basedir + "/nanocompore_pipelines/METTL3_KD_ncRNAs/results/nanocompore/out_SampComp.db"
 fasta = basedir + "/nanocompore_pipelines/METTL3_KD_ncRNAs/results/references/reference_transcriptome.fa"
 outdir = basedir + "/profiles/ncRNAs"
