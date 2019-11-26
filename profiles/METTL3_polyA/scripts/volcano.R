@@ -18,6 +18,8 @@ id2name <- getBM(attributes=c('ensembl_transcript_id', 'hgnc_symbol'),
       	   mart = ensembl)
 nanocompore <- left_join(nanocompore, id2name, by=c("ref_id"="ensembl_transcript_id"))
 
+dplyr::select(nanocompore, pos, genomicPos, ref_id, ref_kmer, GMM_logit_pvalue, hgnc_symbol) %>%
+	write_tsv(paste0(RESULTS,"annotated_sites.txt"))
 
 volcano <- nanocompore %>% mutate(LOR=case_when(Logit_LOR=="NC"~0, TRUE~as.numeric(Logit_LOR))) %>% { ggplot(., aes(x=LOR, y=-log10(GMM_logit_pvalue))) + 
 	geom_point(size=0.9, alpha=0.8) + 
