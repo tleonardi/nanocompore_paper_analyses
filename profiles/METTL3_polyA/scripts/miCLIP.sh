@@ -17,7 +17,7 @@ fi
 mkdir -p $ANALYSIS/fastq
 for bam in $data/*.bam; do
 	name=$(basename $bam -jufastqgz_unmapped.bam.deduplicated.bam)
-	samtools fastq -f 256 $bam > $analysis/fastq/${name}.fastq
+	samtools fastq -F 256 $bam > $ANALYSIS/fastq/${name}.fastq
 done
 
 (for bam in $data/*.bam; do
@@ -50,7 +50,7 @@ for fa in $ANALYSIS/fastq/*.fastq; do
 	samtools index $ANALYSIS/whole_transcriptome_bam/${name}.bam $ANALYSIS/whole_transcriptome_bam/${name}.bam.bai
 done
 
-(for bam in $ANALYSIS/transcriptome_bam/*.bam; do
+(for bam in $ANALYSIS/whole_transcriptome_bam/*.bam; do
 	name=$(basename $bam .bam)
 	echo -ne "$name\t"
 	samtools view -F 276 $bam | wc -l 
