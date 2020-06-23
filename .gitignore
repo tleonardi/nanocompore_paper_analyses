@@ -107,6 +107,11 @@ venv.bak/
 */datasets
 */data
 
-*.sto
+tombo_epinano_comparison/fast5
+tombo_epinano_comparison/fastq
+tombo_epinano_comparison/text_output*
+tombo_epinano_comparison/tombo_comparison
+tombo_epinano_comparison/peak_calling_nanocompore
 
+*.sto
 *.img
